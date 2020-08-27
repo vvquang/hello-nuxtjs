@@ -1,0 +1,5 @@
+.nuxt/
+dist/
+public/
+node_modules/
+static/

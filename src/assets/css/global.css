@@ -1,0 +1,37 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+:root {
+  --forground-color: #333;
+  --background-color: #fff;
+
+  --z-index-flat: 0;
+  /* --z-index-float: 1; */
+  --z-index-header: 2;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1;
+}
+
+html,
+body,
+#__nuxt,
+#__layout {
+  height: 100%;
+}
+
+a {
+  color: #333;
+}
+
+.non-styled-link {
+  color: inherit;
+  text-decoration: none;
+}
