@@ -50,6 +50,7 @@ const config: Configuration = {
     '@/plugins/antd-ui',
     '~/plugins/global-components.js',
     '~/plugins/composition-api.js',
+    '~/plugins/lodash.js',
   ],
   /*
    ** Auto import components
@@ -114,6 +115,7 @@ const config: Configuration = {
       },
     },
   },
+  // pwa: {},
 }
 
 export default config
