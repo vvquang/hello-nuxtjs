@@ -1,7 +1,7 @@
 <template>
   <div>
-    <carousel :slides="slides">
-      <carousel-item v-for="item in slides" :key="item.id">
+    <carousel>
+      <div v-for="item in slides" :key="item.id">
         <div class="slide-image">
           <div
             class="slide-image__content"
@@ -11,7 +11,10 @@
           />
         </div>
         <div class="slide-content">{{ item.content }}</div>
-      </carousel-item>
+      </div>
+
+      <div>hello</div>
+      <div>hihhiih</div>
     </carousel>
   </div>
 </template>
@@ -54,8 +57,7 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 import { Slide } from '~/domain/Slide'
-import Carousel from '~/components/elements/Carousel.vue'
-import CarouselItem from '~/components/elements/Slide.vue'
+import Carousel from '~/components/elements/Carousel'
 
 type Props = {
   slides: Slide[]
@@ -70,7 +72,6 @@ export default defineComponent({
   },
   components: {
     Carousel,
-    CarouselItem,
   },
   setup() {
     return {}

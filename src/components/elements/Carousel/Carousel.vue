@@ -1,26 +1,3 @@
-
-<template>
-  <div class="main-slider">
-    <button class="slide-prev slide-arrow" @click="previousPage">
-      Previous
-    </button>
-    <div class="slide-list">
-      <div
-        class="slide-track"
-        :style="{
-          width: `${widthSlideTrack}px`,
-          opacity: 1,
-          transform: `translate3d(${translateX}px, 0px, 0px)`,
-        }"
-      >
-        <slot :widthSlideItem="widthSlideItem" />
-      </div>
-    </div>
-    <button class="slide-next slide-arrow" @click="nextPage">Next</button>
-  </div>
-</template>
-
-
 <style lang="scss" scoped>
 .slide-list {
   position: relative;
@@ -54,9 +31,18 @@
   display: table;
   content: '';
 }
+
+.slide-item {
+  position: relative;
+  float: left;
+  outline: 0;
+  height: 100%;
+  min-height: 1px;
+}
 </style>
 <script lang="ts">
 import {
+  h,
   defineComponent,
   computed,
   ref,
@@ -64,6 +50,8 @@ import {
   watch,
   onBeforeUnmount,
 } from '@vue/composition-api'
+import { VNode } from 'vue'
+import CarouselTemplate from './CarouselTemplate.vue'
 import debounce from '~/utils/debouce'
 
 type Props = {}
@@ -75,19 +63,17 @@ export default defineComponent({
     },
     autoplaySpeed: {
       type: Number,
+      default: 2000,
     },
   },
-  // use `provide` to avoid `Slide` being nested with other components
-  provide() {
-    return {
-      carousel: this,
-    }
+  components: {
+    CarouselTemplate,
   },
   setup(_props: Props, context) {
     const widthSlideItem = ref(0)
     const currentSlide = ref(0)
     const windowWidth = ref(window.innerWidth)
-    let slideList: never[] | HTMLCollection = []
+    let slideList: VNode[] = []
 
     const widthSlideTrack = computed(
       () => widthSlideItem.value * slideList.length
@@ -101,23 +87,11 @@ export default defineComponent({
     })
 
     const getSlideList = () => {
-      const elMainSlider: HTMLElement | null = document.querySelector(
-        '.main-slider'
-      )
-      const elSlideTrack = elMainSlider
-        ? elMainSlider.querySelector('.slide-track')
-        : null
-
-      const childrens = elSlideTrack ? elSlideTrack.children : []
-      // if (childrens.length <= 1) {
-      slideList = childrens
-      // } else {
-      //   slideList = slideList.push(childrens[0])
-      // }
-
-      // console.log(context.slots.default)
-
-      widthSlideItem.value = elMainSlider ? elMainSlider.offsetWidth : 0
+      const childrens = context.slots.default().filter((vnode) => vnode.tag)
+      slideList =
+        childrens.length < 2
+          ? [...childrens]
+          : [childrens[childrens.length - 1], ...childrens, childrens[0]]
     }
 
     const getCarouselWidth = () => {
@@ -145,6 +119,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSlideList()
+      getCarouselWidth()
       window.addEventListener('resize', debounce(handleWindowResize, 100, true))
     })
 
@@ -152,16 +127,36 @@ export default defineComponent({
       window.removeEventListener('resize', handleWindowResize)
     })
 
-    return {
-      slideList,
-      widthSlideItem,
-      widthSlideTrack,
-      translateX,
-      previousPage,
-      nextPage,
-      currentSlide,
-      windowWidth,
-    }
+    return () =>
+      h(
+        CarouselTemplate,
+        {
+          props: {
+            nextPage,
+            previousPage,
+            widthSlideTrack: widthSlideTrack.value,
+            translateX: translateX.value,
+            widthSlideItem: widthSlideItem.value,
+          },
+        },
+        slideList.map((vnode) =>
+          h(
+            'div',
+            {
+              attrs: {
+                tabIndex: -1,
+              },
+              class: {
+                'slide-item': true,
+              },
+              style: {
+                width: `${widthSlideItem.value}px`,
+              },
+            },
+            vnode.children
+          )
+        )
+      )
   },
 })
 </script>
