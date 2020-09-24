@@ -54,9 +54,8 @@ import { VNode } from 'vue'
 import CarouselTemplate from './CarouselTemplate.vue'
 import debounce from '~/utils/debouce'
 
-type Props = {}
-
 export default defineComponent({
+  name: 'slider',
   props: {
     autoplay: {
       type: Boolean,
@@ -65,13 +64,20 @@ export default defineComponent({
       type: Number,
       default: 2000,
     },
+    /**
+     * Flag to make the carousel loop around when it reaches the end
+     */
+    loop: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     CarouselTemplate,
   },
-  setup(_props: Props, context) {
+  setup(props, context) {
     const widthSlideItem = ref(0)
-    const currentSlide = ref(0)
+    const currentPage = ref(0)
     const windowWidth = ref(window.innerWidth)
     let slideList: VNode[] = []
 
@@ -79,8 +85,9 @@ export default defineComponent({
       () => widthSlideItem.value * slideList.length
     )
     const translateX = computed(
-      () => -(currentSlide.value * widthSlideItem.value)
+      () => -(currentPage.value * widthSlideItem.value)
     )
+    const pageCount = computed(() => slideList.length)
 
     watch(windowWidth, () => {
       getCarouselWidth()
@@ -102,15 +109,16 @@ export default defineComponent({
     }
 
     const nextPage = () => {
-      currentSlide.value =
-        currentSlide.value + 1 < slideList.length
-          ? currentSlide.value + 1
-          : currentSlide.value
+      if (currentPage.value < pageCount.value - 1) return currentPage.value + 1
+
+      return props.loop ? 0 : currentPage.value
     }
 
     const previousPage = () => {
-      currentSlide.value =
-        currentSlide.value > 0 ? currentSlide.value - 1 : currentSlide.value
+      if (currentPage.value > 0) {
+        return currentPage.value - 1
+      }
+      return props.loop ? pageCount.value - 1 : currentPage
     }
 
     const handleWindowResize = () => {
