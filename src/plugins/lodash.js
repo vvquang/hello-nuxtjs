@@ -1,0 +1,22 @@
+import Vue from 'vue'
+import _ from 'lodash'
+
+// const VueLodash = {
+//   install(Vue, options) {
+//     Vue.prototype.$_ = _
+
+//     Vue.mixin({
+//       mounted() {
+//         // Just tell you that it is mounted
+//         // console.log('VueLodash');
+//       },
+//     })
+
+//     if (typeof window !== 'undefined' && window.Vue) {
+//       window.Vue.use(VueLodash)
+//     }
+//   },
+// }
+// export default VueLodash
+
+Object.defineProperty(Vue.prototype, '$_', { value: _ })

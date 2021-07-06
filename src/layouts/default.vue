@@ -55,8 +55,8 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import Header from '~/components/modules/Header'
-import Footer from '~/components/modules/Footer'
+import Header from '~/components/modules/Header.vue'
+import Footer from '~/components/modules/Footer.vue'
 
 export default defineComponent({
   components: {
